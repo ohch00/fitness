@@ -1,16 +1,16 @@
 {
   "name": "fitness",
   "version": "1.0.0",
+  "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server/index.js"
+    "start": "node index.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ohch00/fitness.git"
   },
-  "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
@@ -19,7 +19,5 @@
   "homepage": "https://github.com/ohch00/fitness#readme",
   "dependencies": {
     "express": "^4.18.1"
-  },
-  "devDependencies": {},
-  "description": ""
+  }
 }
