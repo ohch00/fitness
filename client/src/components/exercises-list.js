@@ -6,7 +6,7 @@ const Exercise = props => (
     <tr>
       <td>{props.exercise.name}</td>
       <td>{props.exercise.description}</td>
-      <td><img src={props.exercise.reference}></img></td>
+      <td><img src={props.exercise.reference} alt=''></img></td>
       <td>
         <Link to={"/edit/"+props.exercise._id}>edit</Link> | <a href="#" onClick={() => { props.deleteExercise(props.exercise._id) }}>delete</a>
       </td>

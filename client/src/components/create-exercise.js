@@ -33,31 +33,35 @@ export default class CreateExercise extends Component {
         });
     }
 
-    onChangeReference(url) {
+    onChangeReference(e) {
         this.setState({
-            reference: url
+            reference: e
         });
+        
     }
 
     /* Start of image upload procedure */
-    uploadImage(file, url) {
+    async uploadImage(file) {
         const storageRef = ref(storage, file.name)
+        return new Promise(function (resolve, reject) {
         uploadBytes(storageRef, file).then((snapshot) => {
             console.log("uploaded image");
-            getDownloadURL(ref(storage, file.name)).then((u) => {
-            url = u;
-            this.onChangeReference(url);
+            getDownloadURL(ref(storage, file.name)).then((url) => {
+                resolve(url);
+                    });
         });
-        });
-    }
+        }
+    )}
 
-    onSubmit(e){
+    async onSubmit(e){
         e.preventDefault();
+
+        let url = await this.uploadImage(this.state.reference);
 
         const exercise = {
             name: this.state.name,
             description: this.state.description,
-            reference: this.state.reference
+            reference: url
 
         }
         console.log(exercise);
@@ -69,7 +73,6 @@ export default class CreateExercise extends Component {
     }
 
 render(){
-    const url = '';
     return (
         <div>
       <h3>Add Exercise to Workouts</h3>
@@ -97,7 +100,7 @@ render(){
           <input  type="file"
               required
               className="form-control"
-              onChange={(e) => this.uploadImage(e.target.files[0], url)}
+              onChange={(e) => this.onChangeReference(e.target.files[0])}
               />
         </div>
         <div className="form-group">
