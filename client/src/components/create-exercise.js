@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import DatePicker from 'react-datepicker';
-import "react-datepicker/dist/react-datepicker.css";
 import axios from 'axios';
+import { initializeApp } from "firebase/app";
+
+c
 
 
 export default class CreateExercise extends Component {
@@ -17,14 +18,12 @@ export default class CreateExercise extends Component {
         this.state = {
             username: '',
             description: '',
-            duration: 0,
-            date: new Date(),
-            users: []
+            reference: null
         }
     }
 
     componentDidMount(){
-        axios.get('http://localhose:3001/users/')
+        axios.get('http://localhost:3001/users/')
         .then(response => {
             if (response.data.length > 0){
                 this.setState({
@@ -47,16 +46,14 @@ export default class CreateExercise extends Component {
         });
     }
 
-    onChangeDuration(e){
+    onChangeReference(e) {
         this.setState({
-            duration: e.target.value
+            reference: e.target.files[0]
         });
     }
 
-    onChangeDate(date){
-        this.setState({
-            date: date
-        });
+    onImageUpload() {
+
     }
 
     onSubmit(e){
@@ -65,8 +62,7 @@ export default class CreateExercise extends Component {
         const exercise = {
             username: this.state.username,
             description: this.state.description,
-            duration: this.state.duration,
-            date: this.state.date
+            reference: this.state.reference
 
         }
         console.log(exercise);
@@ -108,27 +104,19 @@ render(){
               onChange={this.onChangeDescription}
               />
         </div>
-        <div className="form-group">
-          <label>Duration (in minutes): </label>
-          <input 
-              type="text" 
+        <div className="form-group"> 
+          <label>Reference: </label>
+          <input  type="file"
+              required
               className="form-control"
-              value={this.state.duration}
-              onChange={this.onChangeDuration}
+              value={this.state.description}
+              onChange={this.onChangeDescription}
               />
         </div>
+        
+        
         <div className="form-group">
-          <label>Date: </label>
-          <div>
-            <DatePicker
-              selected={this.state.date}
-              onChange={this.onChangeDate}
-            />
-          </div>
-        </div>
-
-        <div className="form-group">
-          <input type="submit" value="Create Exercise Log" className="btn btn-primary" />
+          <input type="button" onClick={this.onSubmit} value="Create Exercise Log" className="btn btn-primary" />
         </div>
       </form>
     </div>
