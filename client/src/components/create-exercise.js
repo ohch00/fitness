@@ -1,28 +1,27 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import { initializeApp } from "firebase/app";
-
-c
+import storage from '../firebaseConfig.js';
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 
 export default class CreateExercise extends Component {
     constructor(props){
         super(props);
 
-        this.onChangeUsername = this.onChangeUsername.bind(this);
+        this.onChangeName = this.onChangeName.bind(this);
         this.onChangeDescription = this.onChangeDescription.bind(this);
-        this.onChangeDuration = this.onChangeDuration.bind(this);
-        this.onChangeDate = this.onChangeDate.bind(this);
+        this.onChangeReference = this.onChangeReference.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
+        this.uploadImage = this.uploadImage.bind(this);
 
         this.state = {
-            username: '',
+            name: '',
             description: '',
-            reference: null
+            reference: ''
         }
     }
 
-    componentDidMount(){
+    /*componentDidMount(){
         axios.get('http://localhost:3001/users/')
         .then(response => {
             if (response.data.length > 0){
@@ -32,11 +31,11 @@ export default class CreateExercise extends Component {
                 })
             }
         })
-    }
+    }*/
 
-    onChangeUsername(e){
+    onChangeName(e){
         this.setState({
-            username: e.target.value
+            name: e.target.value
         });
     }
 
@@ -46,21 +45,30 @@ export default class CreateExercise extends Component {
         });
     }
 
-    onChangeReference(e) {
+    onChangeReference(url) {
         this.setState({
-            reference: e.target.files[0]
+            reference: url
         });
     }
 
-    onImageUpload() {
+    /* Start of image upload procedure */
 
+    uploadImage(file, url) {
+        const storageRef = ref(storage, file.name)
+        uploadBytes(storageRef, file).then((snapshot) => {
+            console.log("uploaded image");
+            getDownloadURL(ref(storage, file.name)).then((u) => {
+            u = url
+            this.onChangeReference(url);
+        });
+        });
     }
 
     onSubmit(e){
         e.preventDefault();
 
         const exercise = {
-            username: this.state.username,
+            name: this.state.name,
             description: this.state.description,
             reference: this.state.reference
 
@@ -74,26 +82,19 @@ export default class CreateExercise extends Component {
     }
 
 render(){
+    const url = '';
     return (
         <div>
-      <h3>Create New Exercise Log</h3>
+      <h3>Add Exercise to Workouts</h3>
       <form onSubmit={this.onSubmit}>
-        <div className="form-group"> 
-          <label>Username: </label>
-          <select ref="userInput"
+      <div className="form-group"> 
+          <label>Name: </label>
+          <input  type="text"
               required
               className="form-control"
-              value={this.state.username}
-              onChange={this.onChangeUsername}>
-              {
-                this.state.users.map(function(user) {
-                  return <option 
-                    key={user}
-                    value={user}>{user}
-                    </option>;
-                })
-              }
-          </select>
+              value={this.state.name}
+              onChange={this.onChangeName}
+              />
         </div>
         <div className="form-group"> 
           <label>Description: </label>
@@ -109,12 +110,10 @@ render(){
           <input  type="file"
               required
               className="form-control"
-              value={this.state.description}
-              onChange={this.onChangeDescription}
+              value={this.state.reference}
+              onChange={(e) => this.uploadImage(e.target.files[0], url)}
               />
         </div>
-        
-        
         <div className="form-group">
           <input type="button" onClick={this.onSubmit} value="Create Exercise Log" className="btn btn-primary" />
         </div>
