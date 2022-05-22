@@ -17,21 +17,9 @@ export default class CreateExercise extends Component {
         this.state = {
             name: '',
             description: '',
-            reference: ''
+            reference: undefined
         }
     }
-
-    /*componentDidMount(){
-        axios.get('http://localhost:3001/users/')
-        .then(response => {
-            if (response.data.length > 0){
-                this.setState({
-                    users: response.data.map(user => user.username),
-                    username: response.data[0].username
-                })
-            }
-        })
-    }*/
 
     onChangeName(e){
         this.setState({
@@ -52,13 +40,12 @@ export default class CreateExercise extends Component {
     }
 
     /* Start of image upload procedure */
-
     uploadImage(file, url) {
         const storageRef = ref(storage, file.name)
         uploadBytes(storageRef, file).then((snapshot) => {
             console.log("uploaded image");
             getDownloadURL(ref(storage, file.name)).then((u) => {
-            u = url
+            url = u;
             this.onChangeReference(url);
         });
         });
@@ -110,7 +97,6 @@ render(){
           <input  type="file"
               required
               className="form-control"
-              value={this.state.reference}
               onChange={(e) => this.uploadImage(e.target.files[0], url)}
               />
         </div>
