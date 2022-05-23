@@ -104,7 +104,7 @@ render(){
               />
         </div>
         <div className="form-group">
-          <input type="button" onClick={this.onSubmit} value="Create Exercise Log" className="btn btn-primary" />
+          <input type="button" onClick={this.onSubmit} value="Add Exercise" className="btn btn-primary" />
         </div>
       </form>
     </div>

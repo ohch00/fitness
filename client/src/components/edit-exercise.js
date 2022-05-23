@@ -1,129 +1,140 @@
-import React, { Component } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import DatePicker from 'react-datepicker';
-import "react-datepicker/dist/react-datepicker.css";
+import storage from '../firebaseConfig.js';
+import { ref, uploadBytes, getDownloadURL, deleteObject, getStorage } from "firebase/storage";
 
-export default class EditExercise extends Component {
-  constructor(props) {
-    super(props);
+ const EditExercise = props =>{
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const [reference, setReference] = useState('');
+  const [prevRef, setPrevRef] = useState('');
+  const [updatedImage, setUpdated] = useState(false);
+  
+  const params = useParams();
 
-    this.onChangeUsername = this.onChangeUsername.bind(this);
-    this.onChangeDescription = this.onChangeDescription.bind(this);
-    this.onChangeReference = this.onChangeReference.bind(this);
-    this.onSubmit = this.onSubmit.bind(this);
-
-    this.state = {
-      username: '',
-      description: '',
-      reference: ''
-    }
-  }
-
-  componentDidMount() {
-    axios.get('http://localhost:3001/exercises/'+this.props.match.params.id)
+  useEffect(() => {
+    axios.get('http://localhost:3001/exercises/'+params.id)
       .then(response => {
-        this.setState({
-          username: response.data.username,
-          description: response.data.description,
-          duration: response.data.duration,
-          date: new Date(response.data.date)
-        })   
+        setName(response.data.name);
+        setDescription(response.data.description);
+        setReference(response.data.reference);
+        setPrevRef(response.data.reference);
       })
       .catch(function (error) {
         console.log(error);
       })
+  },  []);
 
-    axios.get('http://localhost:3001/users/')
-      .then(response => {
-        if (response.data.length > 0) {
-          this.setState({
-            users: response.data.map(user => user.username),
-          })
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-      })
-
+  const onChangeName = e => {
+    setName(e.target.value);
   }
 
-  onChangeUsername(e) {
-    this.setState({
-      username: e.target.value
-    })
+  const onChangeDescription = e => {
+    setDescription(e.target.value);
   }
 
-  onChangeDescription(e) {
-    this.setState({
-      description: e.target.value
-    })
+  const onChangeReference = async e => {
+    setReference(e);
+    setUpdated(true);
   }
 
-  onChangeReference(e) {
-    this.setState({
-      reference: e.target.value
-    })
-  }
+   /* Start of image upload procedure */
+  const uploadImage = file => {
+    const storageRef = ref(storage, file.name)
+    return new Promise(function (resolve, reject) {
+    uploadBytes(storageRef, file).then((snapshot) => {
+        console.log("uploaded image");
+        getDownloadURL(ref(storage, file.name)).then((url) => {
+            resolve(url);
+                });
+    });
+    }
+)}
 
-  onSubmit(e) {
-    e.preventDefault();
+// https://stackoverflow.com/questions/45045054/how-to-call-reffromurl-in-firebase-cloud-function
+ const getFileFromURL = fileURL => {
+  const fSlashes = fileURL.split('/');
+  const fQuery = fSlashes[fSlashes.length - 1].split('?');
+  const segments = fQuery[0].split('%2F');
+  const fileName = segments.join('/');
+
+  return fileName;
+}
+
+ const deleteImage = async url => {
+    
+  var filename = getFileFromURL(url);
+  var deleteStorage = getStorage();
+  var imageRef = ref(deleteStorage, filename);
+    return new Promise(function(resolve, reject){
+    deleteObject(imageRef).then(() => {
+      resolve(console.log('deleted image from firebase'));
+    }).catch((error) => {
+
+    });
+  })}
+
+const onSubmit = async e => {
+  e.preventDefault();
+
+  if (updatedImage === true){
+    deleteImage(prevRef);
+    let url = await uploadImage(reference);
 
     const exercise = {
-      username: this.state.username,
-      description: this.state.description,
-      duration: this.state.duration,
-      date: this.state.date
-    }
+      name: name,
+      description: description,
+      reference: url
+  }
+      console.log(exercise);
 
-    console.log(exercise);
-
-    axios.post('http://localhost:3001/exercises/update/' + this.props.match.params.id, exercise)
+      axios.post('http://localhost:3001/exercises/update/' + params.id, exercise)
       .then(res => console.log(res.data));
 
-    window.location = '/';
-  }
+      window.location = '/';
+  } else {
 
-  render() {
+  const exercise = {
+      name: name,
+      description: description,
+      reference: reference
+  }
+  console.log(exercise);
+
+  axios.post('http://localhost:3001/exercises/update', exercise)
+  .then(res => console.log(res.data));
+
+  window.location = '/';
+}}
+
     return (
     <div>
-      <h3>Edit Exercise Log</h3>
-      <form onSubmit={this.onSubmit}>
-        <div className="form-group"> 
-          <label>Username: </label>
-          <select ref="userInput"
-              required
+      <h3>Edit Exercises</h3>
+      <form onSubmit={onSubmit}>
+      <div className="form-group"> 
+          <label>Name: </label>
+          <input  type="text"
               className="form-control"
-              value={this.state.username}
-              onChange={this.onChangeUsername}>
-              {
-                this.state.users.map(function(user) {
-                  return <option 
-                    key={user}
-                    value={user}>{user}
-                    </option>;
-                })
-              }
-          </select>
+              value={name}
+              onChange={(e) => onChangeName(e)}
+              />
         </div>
         <div className="form-group"> 
           <label>Description: </label>
           <input  type="text"
-              required
               className="form-control"
-              value={this.state.description}
-              onChange={this.onChangeDescription}
+              value={description}
+              onChange={(e) => onChangeDescription(e)}
               />
         </div>
         <div className="form-group"> 
           <label>Reference: </label>
-          <input  type="text"
-              required
+          <input  type="file"
               className="form-control"
-              value={this.state.reference}
-              onChange={this.onChangeReference}
+              onChange={(e) => onChangeReference(e.target.files[0])}
               />
         </div>
-
         <div className="form-group">
           <input type="submit" value="Edit Exercise" className="btn btn-primary" />
         </div>
@@ -131,4 +142,5 @@ export default class EditExercise extends Component {
     </div>
     )
   }
-}
+
+  export default EditExercise;
