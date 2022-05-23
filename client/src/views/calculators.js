@@ -1,6 +1,31 @@
+import React, { useState } from 'react';
+import TDEECalc from '../images/TDEECalculator.JPG';
+import TDEESpreadsheet from '../images/TDEESpreadsheet.JPG';
+import NIH from '../images/NIH.JPG';
 
 
-function Calculators(props) {
+const Calculators = props => {
+    const [tdee, setTDEE] = useState('');
+    const [eaten, setEaten] = useState('');
+
+    const compute = () => {
+        var excess = eaten - tdee;
+        if (excess <= 0) {
+            return "No additional weight gained.";
+        } else {
+            var gained = Math.floor(excess/3500);
+            return gained.toString();
+        }
+    }
+
+    const onChangeTDEE = e => {
+        console.log(e.target.value)
+        setTDEE(e.target.value);
+      }
+    
+      const onChangeEaten = e => {
+        setEaten(e.target.value);
+      }
 
     return <div>
     <h3>Calculators for Fitness</h3>
@@ -10,7 +35,7 @@ function Calculators(props) {
         The below calculators will help you gain some insight into your goal.
     </p>
     <p>
-        ***Note: These calculators only provide an estimate for informational purposes and are not intended to be taken as fact, as everyone's body is different when it comes to changing their weight. Please consult a doctor before altering your diet or daily regimen.
+        *** Note: These calculators only provide an estimate for informational purposes and are not intended to be taken as fact, as everyone's body is different when it comes to changing their weight. Please consult a doctor before altering your diet or daily regimen.
     </p>
     <div>
         <h5>Total Daily Energy Expenditure (TDEE) Calculator</h5>
@@ -18,7 +43,7 @@ function Calculators(props) {
             The calculator will ask you for information such as age, weight, and height, to estimate how many calories you use daily.
             The calculator uses multiple BMR Methodologies to find your TDEE. </p>
         <a href="https://www.sailrabbit.com/bmr/">TDEE Calculator</a>
-        <img alt="TDEE Calculator"></img>
+        <img alt="TDEE Calculator" src={TDEECalc}></img>
 
         <br></br>
         <h5>Total Daily Energy Expenditure (TDEE) Spreadsheet</h5>
@@ -26,7 +51,7 @@ function Calculators(props) {
             Similar to the TDEE Calculator, the spreadsheet will ask you for information such as age, weight, and height, to estimate how many calories you use daily.
             The TDEE Spreadsheet asks you to input your weight and calories consumed daily to calculate an accurate TDEE.</p>
         <a href="https://www.reddit.com/r/Fitness/comments/4mhvpn/adaptive_tdee_tracking_spreadsheet_v3_rescue/">3-Suns TDEE Spreadsheet</a>
-        <img alt="3-Suns TDEE Spreadsheet"></img>
+        <img alt="3-Suns TDEE Spreadsheet" src={TDEESpreadsheet}></img>
     </div>
     <div>
         <h5>Weight Projection</h5>
@@ -35,7 +60,7 @@ function Calculators(props) {
             It will also ask you to enter your goal weight and desired goal achievement date to project your weight change day-by-day.  
         </p>
         <a href="https://www.niddk.nih.gov/bwp">Body Weight Planner</a>
-        <img alt="NIH Body Weight Planner"></img>
+        <img alt="NIH Body Weight Planner" src={NIH}></img>
     </div>
     <div>
         <h5>Realistic Weight Gained by Eating</h5>
@@ -45,8 +70,40 @@ function Calculators(props) {
         This calculator will ask for your TDEE and the amount of calories eaten the day before.
         Then, it will calculate how much "actual weight" you gained from eating.
         </p>
-        <div></div>
         <p>Please note that your calculations will not be saved and will be gone once you leave this page.</p>
+        <div>
+            <h5>Calculator</h5>
+            <div className="row">
+                <div className="col">
+            <form>
+      <div className="form-group"> 
+          <label>TDEE: </label>
+          <input  type="number"
+              required
+              placeholder='calories'
+              value={tdee}
+              className="form-control"
+              onChange={(e) => onChangeTDEE(e)}
+              />
+        </div>
+        <div className="form-group"> 
+          <label>Calories Eaten: </label>
+          <input  type="number"
+              required
+              placeholder='calories'
+              value={eaten}
+              className="form-control"
+              onChange={(e) => onChangeEaten(e)}
+              />
+        </div>
+        <div className="form-group">
+          <input type="button" onClick={compute} value="Calculate" className="btn btn-primary" />
+        </div>
+      </form>
+        </div>
+        
+        </div>
+        </div>
     </div>
   </div>
 }
