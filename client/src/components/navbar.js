@@ -9,14 +9,8 @@ export class Navbar extends Component {
         <Link to="/" className="navbar-brand">Fitness</Link>
         <div className="collpase navbar-collapse">
         <ul className="navbar-nav mr-auto">
-        <li className="navbar-item">
-          <Link to="/" className="nav-link">Home</Link>
-          </li>
           <li className="navbar-item">
           <Link to="/exercises" className="nav-link">Exercises</Link>
-          </li>
-          <li className="navbar-item">
-          <Link to="/add" className="nav-link">Add Exercise</Link>
           </li>
           <li className="navbar-item">
           <Link to="/calculators" className="nav-link">Calculators</Link>

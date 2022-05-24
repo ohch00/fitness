@@ -1,0 +1,26 @@
+img {
+    width: 65%;
+    height: auto;
+    padding-bottom: 10px;
+}
+
+.calculatorsPage {
+    padding-top: 50px;
+    text-align: center;
+}
+
+.calc {
+    padding-top: 70px;
+}
+
+#calculator {
+    padding-top: 20px;
+}
+
+.row {
+    padding-top: 10px;
+}
+
+.column {
+    padding-top: 10px;
+}
