@@ -8,23 +8,24 @@ import '../styles/calculators.css'
 const Calculators = props => {
     const [tdee, setTDEE] = useState('');
     const [eaten, setEaten] = useState('');
+    const [calculated, setCalculated] = useState('');
 
     const compute = () => {
         var excess = eaten - tdee;
         if (excess <= 0) {
-            return "No additional weight gained.";
+            setCalculated("No additional weight gained.");
         } else {
-            var gained = Math.floor(excess/3500);
-            return gained.toString();
+            var gained = excess/3500;
+            var rounded = Math.round(gained * 100) / 100;
+            setCalculated(rounded.toString() + ' pounds');
         }
     }
 
     const onChangeTDEE = e => {
-        console.log(e.target.value)
         setTDEE(e.target.value);
       }
     
-      const onChangeEaten = e => {
+    const onChangeEaten = e => {
         setEaten(e.target.value);
       }
 
@@ -81,32 +82,41 @@ const Calculators = props => {
             <div className="row">
                 <div className="col">
             <form>
-      <div className="form-group"> 
-          <label>TDEE: </label>
-          <input  type="number"
-              required
-              placeholder='calories'
-              value={tdee}
-              className="form-control"
-              onChange={(e) => onChangeTDEE(e)}
-              />
+                <div className="form-group"> 
+                    <label>TDEE: </label>
+                    <input  type="number"
+                        required
+                        placeholder='calories'
+                        value={tdee}
+                        className="form-control"
+                        onChange={(e) => onChangeTDEE(e)}
+                        />
+                    </div>
+                    <div className="form-group"> 
+                    <label>Calories Eaten: </label>
+                    <input  type="number"
+                        required
+                        placeholder='calories'
+                        value={eaten}
+                        className="form-control"
+                        onChange={(e) => onChangeEaten(e)}
+                        />
+                    </div>
+                   
+                </form>
         </div>
-        <div className="form-group"> 
-          <label>Calories Eaten: </label>
-          <input  type="number"
-              required
-              placeholder='calories'
-              value={eaten}
-              className="form-control"
-              onChange={(e) => onChangeEaten(e)}
-              />
+        <div className='col'>
+            <label>Result: </label>
+            <input type='text'
+                placeholder='result'
+                readOnly
+                className='form-control'
+                value={calculated}
+            />
         </div>
-        <div className="form-group">
-          <input type="button" onClick={compute} value="Calculate" className="btn btn-primary" />
-        </div>
-      </form>
-        </div>
-        
+        <div className="form-group" id='button'>
+                    <input type="button" onClick={compute} value="Calculate" className="btn btn-primary" />
+                    </div>
         </div>
         </div>
     </div>
