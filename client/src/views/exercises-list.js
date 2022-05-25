@@ -89,7 +89,7 @@ export default class ExercisesList extends Component{
             <tr>
               <th>Name</th>
               <th>Description</th>
-              <th>Reference</th>
+              <th>Reference Picture</th>
               <th>Actions</th>
             </tr>
           </thead>

@@ -10,6 +10,7 @@ import { ref, uploadBytes, getDownloadURL, deleteObject, getStorage } from "fire
   const [reference, setReference] = useState('');
   const [prevRef, setPrevRef] = useState('');
   const [updatedImage, setUpdated] = useState(false);
+  const [isFile, setFile] = useState(false);
   
   const params = useParams();
 
@@ -34,9 +35,15 @@ import { ref, uploadBytes, getDownloadURL, deleteObject, getStorage } from "fire
     setDescription(e.target.value);
   }
 
-  const onChangeReference = async e => {
+  const onChangeReferenceImage = async e => {
     setReference(e);
+    setFile(true);
     setUpdated(true);
+  }
+
+  const onChangeReferenceLink = e => {
+    setReference(e.target.value);
+    setUpdated(false);
   }
 
    /* Start of image upload procedure */
@@ -92,8 +99,10 @@ const onSubmit = async e => {
       axios.post('http://localhost:3001/exercises/update/' + params.id, exercise)
       .then(res => console.log(res.data));
 
-      window.location = '/';
+      window.location = '/exercises';
   } else {
+
+    deleteImage(prevRef);
 
   const exercise = {
       name: name,
@@ -102,10 +111,10 @@ const onSubmit = async e => {
   }
   console.log(exercise);
 
-  axios.post('http://localhost:3001/exercises/update', exercise)
+  axios.post('http://localhost:3001/exercises/update/' + params.id, exercise)
   .then(res => console.log(res.data));
 
-  window.location = '/';
+  window.location = '/exercises';
 }}
 
     return (
@@ -129,12 +138,31 @@ const onSubmit = async e => {
               />
         </div>
         <div className="form-group"> 
-          <label>Reference: </label>
+          <label>Reference (Image Upload): </label>
           <input  type="file"
               className="form-control"
-              onChange={(e) => onChangeReference(e.target.files[0])}
+              onChange={(e) => onChangeReferenceImage(e.target.files[0])}
               />
         </div>
+        {!isFile &&
+        <div className="form-group"> 
+          <label>Reference (Image Link): </label>
+          <input  type="url"
+            value={reference}
+              className="form-control"
+              onChange={(e) => onChangeReferenceLink(e)}
+              />
+        </div>
+          }
+          {isFile &&
+        <div className="form-group"> 
+          <label>Reference (Image Link): </label>
+          <input  type="url"
+              className="form-control"
+              onChange={(e) => onChangeReferenceLink(e)}
+              />
+        </div>
+          }
         <div className="form-group">
           <input type="submit" value="Edit Exercise" className="btn btn-primary" />
         </div>

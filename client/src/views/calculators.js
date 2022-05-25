@@ -16,8 +16,8 @@ const Calculators = props => {
             setCalculated("No additional weight gained.");
         } else {
             var gained = excess/3500;
-            var rounded = Math.round(gained * 100) / 100;
-            setCalculated(rounded.toString() + ' pounds');
+            var rounded = Math.round(gained * 1000) / 1000;
+            setCalculated('You gained ' + rounded.toString() + ' pounds.');
         }
     }
 

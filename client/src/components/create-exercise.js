@@ -10,14 +10,16 @@ export default class CreateExercise extends Component {
 
         this.onChangeName = this.onChangeName.bind(this);
         this.onChangeDescription = this.onChangeDescription.bind(this);
-        this.onChangeReference = this.onChangeReference.bind(this);
+        this.onChangeReferencePhoto = this.onChangeReferencePhoto.bind(this);
+        this.onChangeReferenceLink = this.onChangeReferenceLink.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
         this.uploadImage = this.uploadImage.bind(this);
 
         this.state = {
             name: '',
             description: '',
-            reference: undefined
+            reference: undefined,
+            isUpload: false
         }
     }
 
@@ -33,12 +35,22 @@ export default class CreateExercise extends Component {
         });
     }
 
-    onChangeReference(e) {
+    onChangeReferencePhoto(e) {
         this.setState({
-            reference: e
+            reference: e,
+            isUpload: true
         });
         
     }
+
+    onChangeReferenceLink(e) {
+        this.setState({
+            reference: e.target.value
+        });
+        
+    }
+
+
 
     /* Start of image upload procedure */
     async uploadImage(file) {
@@ -56,12 +68,27 @@ export default class CreateExercise extends Component {
     async onSubmit(e){
         e.preventDefault();
 
-        let url = await this.uploadImage(this.state.reference);
+        if (this.state.isUpload){
+            let url = await this.uploadImage(this.state.reference);
+            const exercise = {
+                name: this.state.name,
+                description: this.state.description,
+                reference: url
+    
+            }
+
+            console.log(exercise);
+    
+            axios.post('http://localhost:3001/exercises/add', exercise)
+            .then(res => console.log(res.data));
+    
+            window.location = '/exercises';
+        } else {
 
         const exercise = {
             name: this.state.name,
             description: this.state.description,
-            reference: url
+            reference: this.state.reference
 
         }
         console.log(exercise);
@@ -69,8 +96,8 @@ export default class CreateExercise extends Component {
         axios.post('http://localhost:3001/exercises/add', exercise)
         .then(res => console.log(res.data));
 
-        window.location = '/';
-    }
+        window.location = '/exercises';
+    }}
 
 render(){
     return (
@@ -89,20 +116,27 @@ render(){
         <div className="form-group"> 
           <label>Description: </label>
           <input  type="text"
-              required
               className="form-control"
               value={this.state.description}
               onChange={this.onChangeDescription}
               />
         </div>
         <div className="form-group"> 
-          <label>Reference: </label>
+          <label>Reference (Photo Upload): </label>
           <input  type="file"
-              required
               className="form-control"
-              onChange={(e) => this.onChangeReference(e.target.files[0])}
+              onChange={(e) => this.onChangeReferencePhoto(e.target.files[0])}
               />
         </div>
+        <h5> or </h5>
+        <div className="form-group"> 
+          <label>Reference (Image Link): </label>
+          <input  type="link"
+              className="form-control"
+              onChange={this.onChangeReferenceLink}
+              />
+        </div>
+        <br></br>
         <div className="form-group">
           <input type="button" onClick={this.onSubmit} value="Add Exercise" className="btn btn-primary" />
         </div>
