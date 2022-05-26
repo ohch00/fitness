@@ -1,9 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect, createContext } from 'react';
 import { Link } from 'react-router-dom';
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import '../styles/login.css'
-
-
 
 const Login = props =>{
 
@@ -11,19 +9,31 @@ const Login = props =>{
     const [password, setPassword] = useState('');
 
     const auth = getAuth();
+    const user = auth.currentUser;
+
+    console.log(auth);
+
+
+    useEffect(() => {
+      if (user) {
+        window.location = '/logout';
+      } },  []);
     
-    const signIn = () => {
+    const signIn = e => {
+      e.preventDefault();
+
         signInWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
             // Signed in 
             const user = userCredential.user;
+            window.location = '/';
         })
         .catch((error) => {
             const errorCode = error.code;
             const errorMessage = error.message;
             console.log(errorCode, errorMessage);
         });
-        window.location = '/';
+        
       }
 
     const onChangeEmail = e => {
@@ -31,7 +41,18 @@ const Login = props =>{
     }
 
     const onChangePassword = e => {
+      var pass = document.getElementById('password');
+        pass.type = 'password';
         setPassword(e.target.value);
+    }
+
+    const showPassword = () => {
+      var show = document.getElementById('password');
+      if (show.type === 'password'){
+        show.type = 'text';
+      } else {
+        show.type = 'password';
+      }
     }
 
     return (
@@ -40,9 +61,8 @@ const Login = props =>{
           <Link to="/register">
           <button className='registration'>Register</button>
           </Link>
-          <form onSubmit={signIn}>
           <div className="form-group"> 
-              <label>Name: </label>
+              <label>Email: </label>
               <input  type="text"
                   className="form-control"
                   placeholder="Email"
@@ -50,18 +70,22 @@ const Login = props =>{
                   />
             </div>
             <div className="form-group"> 
-              <label>Description: </label>
+              <label>Password: </label>
               <input  type="text"
+              autoComplete='off'
+              id='password'
+              minLength="6"
+              required
                   className="form-control"
                   placeholder="Password"
                   onChange={(e) => onChangePassword(e)}
                   />
+                <input type="checkbox" onClick={showPassword}/>Show Password
             </div>
             <br></br>
             <div className="form-group">
-              <input type="submit" value="Sign In" className="btn btn-primary" />
+              <button type="button" value="Sign In" className="btn btn-primary" onClick={signIn}>Sign In</button>
             </div>
-          </form>
         </div>
         )
 

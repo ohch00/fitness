@@ -10,7 +10,8 @@ const userSchema = new Schema({
         trim: true,
         minlength: 3
     },
-    weeklyWorkout: []
+
+    plannedWorkouts: { type: Array, required: false }
 },
 {
     timestamps: true,

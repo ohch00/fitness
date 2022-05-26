@@ -10,7 +10,7 @@ const Exercise = props => (
       <td>{props.exercise.description}</td>
       <td><img src={props.exercise.reference} alt=''></img></td>
       <td>
-        <Link to={"/edit/"+props.exercise._id}>edit</Link> | <a href="#" onClick={() => { props.deleteExercise(props.exercise._id, props.exercise.reference) }}>delete</a>
+        <Link to={"/edit/"+props.exercise._id}>edit</Link> | <a onClick={() => { props.deleteExercise(props.exercise._id, props.exercise.reference) }}>delete</a>
       </td>
     </tr>
   )
@@ -78,7 +78,7 @@ export default class ExercisesList extends Component{
     
 
 
-    render(){return (
+    render(){ return (
         <div>
         <h3>Exercises</h3>
         <Link to="/add">

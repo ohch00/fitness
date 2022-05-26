@@ -1,59 +1,38 @@
-import React, { Component } from 'react';
+import React, { useState, useContext } from 'react';
 import axios from 'axios';
-import storage from '../firebaseConfig.js';
+import { storage } from '../firebaseConfig.js';
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
+const CreateExercise = props => {
 
-export default class CreateExercise extends Component {
-    constructor(props){
-        super(props);
+    const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const [reference, setReference] = useState(undefined);
+  const [isUpload, setIsUpload] = useState(false);
 
-        this.onChangeName = this.onChangeName.bind(this);
-        this.onChangeDescription = this.onChangeDescription.bind(this);
-        this.onChangeReferencePhoto = this.onChangeReferencePhoto.bind(this);
-        this.onChangeReferenceLink = this.onChangeReferenceLink.bind(this);
-        this.onSubmit = this.onSubmit.bind(this);
-        this.uploadImage = this.uploadImage.bind(this);
 
-        this.state = {
-            name: '',
-            description: '',
-            reference: undefined,
-            isUpload: false
-        }
+    const onChangeName = (e) => {
+        setName(e.target.value);
     }
 
-    onChangeName(e){
-        this.setState({
-            name: e.target.value
-        });
+    const onChangeDescription = (e) => {
+        setDescription(e.target.value);
     }
 
-    onChangeDescription(e){
-        this.setState({
-            description: e.target.value
-        });
-    }
-
-    onChangeReferencePhoto(e) {
-        this.setState({
-            reference: e,
-            isUpload: true
-        });
+    const onChangeReferencePhoto = (e) => {
+        setReference(e);
+        setIsUpload(true);
         
     }
 
-    onChangeReferenceLink(e) {
-        this.setState({
-            reference: e.target.value
-        });
+    const onChangeReferenceLink = (e) => {
+        setReference(e.target.value);
+        setIsUpload(false);
         
     }
-
-
 
     /* Start of image upload procedure */
-    async uploadImage(file) {
+    const uploadImage = async file => {
         const storageRef = ref(storage, file.name)
         return new Promise(function (resolve, reject) {
         uploadBytes(storageRef, file).then((snapshot) => {
@@ -65,14 +44,14 @@ export default class CreateExercise extends Component {
         }
     )}
 
-    async onSubmit(e){
+    const onSubmit = async e => {
         e.preventDefault();
 
-        if (this.state.isUpload){
-            let url = await this.uploadImage(this.state.reference);
+        if (isUpload){
+            let url = await uploadImage(reference);
             const exercise = {
-                name: this.state.name,
-                description: this.state.description,
+                name: name,
+                description: description,
                 reference: url
     
             }
@@ -86,9 +65,9 @@ export default class CreateExercise extends Component {
         } else {
 
         const exercise = {
-            name: this.state.name,
-            description: this.state.description,
-            reference: this.state.reference
+            name: name,
+            description: description,
+            reference: reference
 
         }
         console.log(exercise);
@@ -99,33 +78,32 @@ export default class CreateExercise extends Component {
         window.location = '/exercises';
     }}
 
-render(){
     return (
         <div>
       <h3>Add Exercise to Workouts</h3>
-      <form onSubmit={this.onSubmit}>
+      <form onSubmit={onSubmit}>
       <div className="form-group"> 
           <label>Name: </label>
           <input  type="text"
               required
               className="form-control"
-              value={this.state.name}
-              onChange={this.onChangeName}
+              value={name}
+              onChange={(e) => onChangeName(e)}
               />
         </div>
         <div className="form-group"> 
           <label>Description: </label>
           <input  type="text"
               className="form-control"
-              value={this.state.description}
-              onChange={this.onChangeDescription}
+              value={description}
+              onChange={(e) => onChangeDescription(e)}
               />
         </div>
         <div className="form-group"> 
           <label>Reference (Photo Upload): </label>
           <input  type="file"
               className="form-control"
-              onChange={(e) => this.onChangeReferencePhoto(e.target.files[0])}
+              onChange={(e) => onChangeReferencePhoto(e.target.files[0])}
               />
         </div>
         <h5> or </h5>
@@ -133,14 +111,16 @@ render(){
           <label>Reference (Image Link): </label>
           <input  type="link"
               className="form-control"
-              onChange={this.onChangeReferenceLink}
+              onChange={(e) => onChangeReferenceLink(e)}
               />
         </div>
         <br></br>
         <div className="form-group">
-          <input type="button" onClick={this.onSubmit} value="Add Exercise" className="btn btn-primary" />
+          <input type="submit" value="Add Exercise" className="btn btn-primary" />
         </div>
       </form>
     </div>
     );
-}}
+}
+
+export default CreateExercise;

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import storage from '../firebaseConfig.js';
+import { storage } from '../firebaseConfig.js';
 import { ref, uploadBytes, getDownloadURL, deleteObject, getStorage } from "firebase/storage";
 
  const EditExercise = props =>{

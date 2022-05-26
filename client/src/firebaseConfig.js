@@ -8,4 +8,4 @@ const firebaseApp = initializeApp(firebaseConfig);
 const storage = getStorage(firebaseApp);
 const auth = getAuth(firebaseApp);
 
-export default storage;
+export { storage, auth }
