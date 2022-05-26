@@ -1,6 +1,7 @@
-import React, { useState, useEffect, createContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../firebaseConfig";
 import '../styles/login.css'
 
 const Login = props =>{
@@ -8,11 +9,7 @@ const Login = props =>{
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
-    const auth = getAuth();
     const user = auth.currentUser;
-
-    console.log(auth);
-
 
     useEffect(() => {
       if (user) {
@@ -35,7 +32,7 @@ const Login = props =>{
         });
         
       }
-
+    
     const onChangeEmail = e => {
         setEmail(e.target.value);
     }

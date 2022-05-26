@@ -1,7 +1,8 @@
-import React, { useEffect, useState, setState } from "react";
+import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css"
 import { BrowserRouter as Router, Route, Routes} from "react-router-dom";
-import { getAuth } from "firebase/auth";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "./firebaseConfig";
 
 import Navbar from "./components/navbar.js";
 import HomePage from "./views/homepage.js";
@@ -12,14 +13,18 @@ import Calculators from "./views/calculators.js";
 import Login from "./components/login.js"
 import Registration from "./components/registration.js";
 import LogOut from "./components/logout";
+import WorkoutList from "./views/workout-list.js"
+import DailyWorkout from "./views/daily-workout"
 
 function App() {
   const [data, setData] = React.useState(null);
+  const [signin, setUser] = useState(null);
 
-  const auth = getAuth();
-  const firebaseUser = auth.currentUser;
-  console.log(auth, firebaseUser);
-
+  onAuthStateChanged(auth, (user) => {
+  if (user) {
+    setUser(user);
+  } 
+});
 
   return (
     <Router>
@@ -30,6 +35,8 @@ function App() {
         <Route path="/exercises" element={<ExercisesList/>} />
         <Route path="/edit/:id" element={<EditExercise/>} />
         <Route path="/add" element={<CreateExercise/>} />
+        <Route path="/today" element={<DailyWorkout/>} />
+        <Route path="/all-workouts" element={<WorkoutList/>} />
         <Route path="/calculators" element={<Calculators/>} />
         <Route path="/login" element={<Login/>} />
         <Route path="/register" element={<Registration/>} />

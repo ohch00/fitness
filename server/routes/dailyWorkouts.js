@@ -11,6 +11,7 @@ router.route('/add').post((req, res) => {
   const exercise = req.body.exercise;
   const reps = Number(req.body.reps);
   const sets = Number(req.body.sets);
+  const duration = Number(req.body.duration);
   const date = Date.parse(req.body.date);
   const finished = req.body.finished;
 
@@ -18,6 +19,7 @@ router.route('/add').post((req, res) => {
     exercise,
     reps,
     sets,
+    duration,
     date,
     finished
     
@@ -44,8 +46,9 @@ router.route('/update/:id').post((req, res) => {
   Workout.findById(req.params.id)
     .then(workout => {
         workout.exercise = req.body.exercise;
-        reps = Number(req.body.reps);
+        workout.reps = Number(req.body.reps);
         workout.sets = Number(req.body.sets);
+        workout.duration = Number(req.body.duration);
         workout.date = Date.parse(req.body.date);
         workout.finished = req.body.finished;
 

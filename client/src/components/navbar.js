@@ -1,13 +1,13 @@
-import React, {  } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { getAuth } from "firebase/auth";
+import { auth } from "../firebaseConfig";
 
 
 const Navbar = props => {
 
-  const auth = getAuth();
-  const user = auth.currentUser;
-  
+    
+  const user = auth.currentUser; 
+
     return (
       <nav className="navbar navbar-dark bg-dark navbar-expand-lg">
         <Link to="/" className="navbar-brand">Fitness</Link>
@@ -17,7 +17,7 @@ const Navbar = props => {
           <Link to="/today" className="nav-link">Today's Workout</Link>
           </li>
           <li className="navbar-item">
-          <Link to="/week" className="nav-link">Weekly Workout</Link>
+          <Link to="/all-workouts" className="nav-link">All Scheduled Workouts</Link>
           </li>
           <li className="navbar-item">
           <Link to="/exercises" className="nav-link">Exercises</Link>

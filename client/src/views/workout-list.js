@@ -14,7 +14,7 @@ const Workout = props => (
     </tr>
   )
 
-export default class ExercisesList extends Component{
+export default class WorkoutList extends Component{
     constructor(props){
         super(props);
         this.deleteWorkout = this.deleteWorkout.bind(this);
@@ -47,7 +47,7 @@ export default class ExercisesList extends Component{
     
       exerciseList() {
         return this.state.exercises.map(currentexercise => {
-          return <Exercise exercise={currentexercise} deleteExercise={this.deleteExercise} key={currentexercise._id}/>;
+          return <Workout exercise={currentexercise} deleteExercise={this.deleteExercise} key={currentexercise._id}/>;
         })
       }
     
@@ -76,4 +76,3 @@ export default class ExercisesList extends Component{
       </div>
     );
 }}
-

@@ -80,7 +80,7 @@ const CreateExercise = props => {
 
     return (
         <div>
-      <h3>Add Exercise to Workouts</h3>
+      <h3>Add Exercise to Database</h3>
       <form onSubmit={onSubmit}>
       <div className="form-group"> 
           <label>Name: </label>
