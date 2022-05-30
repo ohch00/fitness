@@ -10,3 +10,5 @@ Users can view their scheduled exercises on the Workouts page.
 
 Users can use the Calculators page to be directed to other websites that show how to calculate your TDEE.
 ![Capture3](https://user-images.githubusercontent.com/55716852/170942357-b9e4a8cd-3c93-45e6-8b83-a6153f0e16b5.JPG)
+
+Login and Registration uses Firebase for authentication.
