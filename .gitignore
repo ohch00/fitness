@@ -131,3 +131,5 @@ dist
 
 # secret keys
 keys.js
+README.md
+.env
