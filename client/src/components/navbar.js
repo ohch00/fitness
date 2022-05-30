@@ -13,9 +13,6 @@ const Navbar = props => {
         <Link to="/" className="navbar-brand">Fitness</Link>
         <div className="collpase navbar-collapse">
         <ul className="navbar-nav mr-auto">
-        <li className="navbar-item">
-          <Link to="/today" className="nav-link">Today's Workout</Link>
-          </li>
           <li className="navbar-item">
           <Link to="/all-workouts" className="nav-link">All Scheduled Workouts</Link>
           </li>

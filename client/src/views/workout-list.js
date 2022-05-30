@@ -1,32 +1,49 @@
-import React, { Component } from 'react';
+import React, { Component, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import { auth } from "../firebaseConfig";
 
 
-const Workout = props => (
+const Workout = props => {
+  
+  const user = auth.currentUser; 
+
+    return(
     <tr>
-      <td>{props.workout.name}</td>
-      <td>{props.workout.description}</td>
-      <td><img src={props.workout.reference} alt=''></img></td>
+      <td>{props.workout.exercise.name}</td>
+      <td>{props.workout.reps}</td>
+      <td>{props.workout.sets}</td>
+      <td>{props.workout.date.substring(0,10)}</td>
       <td>
-        <Link to={"/edit/"+props.workout._id}>edit</Link> | <a onClick={() => { props.deleteExercise(props.exercise._id, props.exercise.reference) }}>delete</a>
+      <Link to={"/edit/"+props.workout._id}>edit</Link> | 
+      <Link to={"/delete/"+props.workout._id}>delete</Link> 
+    
       </td>
     </tr>
   )
+}
 
 export default class WorkoutList extends Component{
+
     constructor(props){
+
         super(props);
         this.deleteWorkout = this.deleteWorkout.bind(this);
 
         this.state = {workouts: []};
+
+        this.user = auth.currentUser;
+        if (this.user){
+          this.user = auth.currentUser.email;
+        }
     }
+
     
 
     componentDidMount(){
-        axios.get('http://localhost:3001/workouts/')
+        axios.get('http://localhost:3001/workouts/' + this.user)
         .then(response => {
-            this.setState({ exercises: response.data})
+            this.setState({ workouts: response.data})
         })
         .catch((error) => {
             console.log(error);
@@ -34,31 +51,36 @@ export default class WorkoutList extends Component{
     }
 
 
-    deleteExercise(id, url) {
-      this.deleteImage(url);
+    deleteWorkout(id) {
 
-        axios.delete('http://localhost:3001/exercises/'+id)
+        axios.delete('http://localhost:3001/workouts/'+id)
           .then(response => { console.log(response.data)});
     
         this.setState({
-          exercises: this.state.exercises.filter(el => el._id !== id)
+          workouts: this.state.workouts.filter(el => el._id !== id)
         })
       }
     
-      exerciseList() {
-        return this.state.exercises.map(currentexercise => {
-          return <Workout exercise={currentexercise} deleteExercise={this.deleteExercise} key={currentexercise._id}/>;
+      workoutList() {
+        return this.state.workouts.map(currentworkout => {
+          return <Workout workout={currentworkout} deleteWorkout={this.deleteWorkout} key={currentworkout._id}/>;
         })
       }
     
 
 
-    render(){ return (
+    render(){ 
+
+      if (!this.user){
+        return (
+          <h1>Please log in to see your workouts.</h1>
+        )
+      } else {
+      
+      return (
+      
         <div>
         <h3>Workouts</h3>
-        <Link to="/add">
-          <button className='addExercise'>+ Add Exercise</button>
-        </Link>
         <table className="table">
           <thead className="thead-light">
             <tr>
@@ -70,9 +92,9 @@ export default class WorkoutList extends Component{
             </tr>
           </thead>
           <tbody>
-            { this.exerciseList() }
+            { this.workoutList() }
           </tbody>
         </table>
       </div>
-    );
+    )};
 }}

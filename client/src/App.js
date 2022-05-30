@@ -14,7 +14,7 @@ import Login from "./components/login.js"
 import Registration from "./components/registration.js";
 import LogOut from "./components/logout";
 import WorkoutList from "./views/workout-list.js"
-import DailyWorkout from "./views/daily-workout"
+import EditWorkout from "./components/edit-workout"
 
 function App() {
   const [data, setData] = React.useState(null);
@@ -35,8 +35,8 @@ function App() {
         <Route path="/exercises" element={<ExercisesList/>} />
         <Route path="/edit/:id" element={<EditExercise/>} />
         <Route path="/add" element={<CreateExercise/>} />
-        <Route path="/today" element={<DailyWorkout/>} />
         <Route path="/all-workouts" element={<WorkoutList/>} />
+        <Route path="/edit/:id" element={<EditWorkout/>} />
         <Route path="/calculators" element={<Calculators/>} />
         <Route path="/login" element={<Login/>} />
         <Route path="/register" element={<Registration/>} />

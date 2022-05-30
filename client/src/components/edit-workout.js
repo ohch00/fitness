@@ -1,149 +1,174 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
-import { getAuth } from "firebase/auth";
+import { useParams } from 'react-router-dom';
 import axios from 'axios';
+import { storage } from '../firebaseConfig.js';
+import { ref, uploadBytes, getDownloadURL, deleteObject, getStorage } from "firebase/storage";
 
-
-const Workouts = props =>{
-
+ const EditExercise = props =>{
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const [reference, setReference] = useState('');
+  const [prevRef, setPrevRef] = useState('');
+  const [updatedImage, setUpdated] = useState(false);
+  const [isFile, setFile] = useState(false);
+  
   const params = useParams();
 
-    const auth = getAuth();
-    const user = auth.currentUser;
+  useEffect(() => {
+    axios.get('http://localhost:3001/exercises/'+params.id)
+      .then(response => {
+        setName(response.data.name);
+        setDescription(response.data.description);
+        setReference(response.data.reference);
+        setPrevRef(response.data.reference);
+      })
+      .catch(function (error) {
+        console.log(error);
+      })
+  },  []);
 
-    let navigate = useNavigate();
+  const onChangeName = e => {
+    setName(e.target.value);
+  }
 
-    const [name, setName] = useState('');
+  const onChangeDescription = e => {
+    setDescription(e.target.value);
+  }
+
+  const onChangeReferenceImage = async e => {
+    setReference(e);
+    setFile(true);
+    setUpdated(true);
+  }
+
+  const onChangeReferenceLink = e => {
+    setReference(e.target.value);
+    setUpdated(false);
+  }
+
+   /* Start of image upload procedure */
+  const uploadImage = file => {
+    const storageRef = ref(storage, file.name)
+    return new Promise(function (resolve, reject) {
+    uploadBytes(storageRef, file).then((snapshot) => {
+        console.log("uploaded image");
+        getDownloadURL(ref(storage, file.name)).then((url) => {
+            resolve(url);
+                });
+    });
+    }
+)}
+
+// https://stackoverflow.com/questions/45045054/how-to-call-reffromurl-in-firebase-cloud-function
+ const getFileFromURL = fileURL => {
+  const fSlashes = fileURL.split('/');
+  const fQuery = fSlashes[fSlashes.length - 1].split('?');
+  const segments = fQuery[0].split('%2F');
+  const fileName = segments.join('/');
+
+  return fileName;
+}
+
+ const deleteImage = async url => {
     
-    useEffect(() => {
-      if (!user){
-        window.location = '/login';
-        
-      } 
-    }, [])
+  var filename = getFileFromURL(url);
+  var deleteStorage = getStorage();
+  var imageRef = ref(deleteStorage, filename);
+    return new Promise(function(resolve, reject){
+    deleteObject(imageRef).then(() => {
+      resolve(console.log('deleted image from firebase'));
+    }).catch((error) => {
 
-    useEffect(() => {
-      if (!user) {
-        window.location = '/login';
-      } else {
-      axios.get('http://localhost:3001/exercises/'+params.id)
-        .then(response => {
-          setName(response.data.name);
-          setDescription(response.data.description);
-          setReference(response.data.reference);
-          setPrevRef(response.data.reference);
-        })
-        .catch(function (error) {
-          console.log(error);
-        })
-    }},  []);
-    
-    const onChangeName = e => {
-      setName(e.target.value);
-    }
-  
-    const onChangeDescription = e => {
-      setDescription(e.target.value);
-    }
-  
-    const onChangeReferenceImage = async e => {
-      setReference(e);
-      setFile(true);
-      setUpdated(true);
-    }
-  
-    const onChangeReferenceLink = e => {
-      setReference(e.target.value);
-      setUpdated(false);
-    }
-  
-  const onSubmit = async e => {
-    e.preventDefault();
-  
-    if (updatedImage === true){
-      deleteImage(prevRef);
-      let url = await uploadImage(reference);
-  
-      const exercise = {
-        name: name,
-        description: description,
-        reference: url
-    }
-        console.log(exercise);
-  
-        axios.post('http://localhost:3001/exercises/update/' + params.id, exercise)
-        .then(res => console.log(res.data));
-  
-        window.location = '/exercises';
-    } else {
-  
-      deleteImage(prevRef);
-  
+    });
+  })}
+
+const onSubmit = async e => {
+  e.preventDefault();
+
+  if (updatedImage === true){
+    deleteImage(prevRef);
+    let url = await uploadImage(reference);
+
     const exercise = {
-        name: name,
-        description: description,
-        reference: reference
-    }
-    console.log(exercise);
-  
-    axios.post('http://localhost:3001/exercises/update/' + params.id, exercise)
-    .then(res => console.log(res.data));
-  
-    window.location = '/exercises';
-  }}
-  
-      return (
-      <div>
-        <h3>Edit Exercises</h3>
-        <form onSubmit={onSubmit}>
-        <div className="form-group"> 
-            <label>Name: </label>
-            <input  type="text"
-                className="form-control"
-                value={name}
-                onChange={(e) => onChangeName(e)}
-                />
-          </div>
-          <div className="form-group"> 
-            <label>Description: </label>
-            <input  type="text"
-                className="form-control"
-                value={description}
-                onChange={(e) => onChangeDescription(e)}
-                />
-          </div>
-          <div className="form-group"> 
-            <label>Reference (Image Upload): </label>
-            <input  type="file"
-                className="form-control"
-                onChange={(e) => onChangeReferenceImage(e.target.files[0])}
-                />
-          </div>
-          {!isFile &&
-          <div className="form-group"> 
-            <label>Reference (Image Link): </label>
-            <input  type="url"
-              value={reference}
-                className="form-control"
-                onChange={(e) => onChangeReferenceLink(e)}
-                />
-          </div>
-            }
-            {isFile &&
-          <div className="form-group"> 
-            <label>Reference (Image Link): </label>
-            <input  type="url"
-                className="form-control"
-                onChange={(e) => onChangeReferenceLink(e)}
-                />
-          </div>
-            }
-          <div className="form-group">
-            <input type="submit" value="Edit Exercise" className="btn btn-primary" />
-          </div>
-        </form>
-      </div>
-      )
-    }
+      name: name,
+      description: description,
+      reference: url
+  }
+      console.log(exercise);
 
-export default Workouts;
+      axios.post('http://localhost:3001/exercises/update/' + params.id, exercise)
+      .then(res => console.log(res.data));
+
+      window.location = '/exercises';
+  } else {
+
+    deleteImage(prevRef);
+
+  const exercise = {
+      name: name,
+      description: description,
+      reference: reference
+  }
+  console.log(exercise);
+
+  axios.post('http://localhost:3001/exercises/update/' + params.id, exercise)
+  .then(res => console.log(res.data));
+
+  window.location = '/exercises';
+}}
+
+    return (
+    <div>
+      <h3>Edit Exercises</h3>
+      <form onSubmit={onSubmit}>
+      <div className="form-group"> 
+          <label>Name: </label>
+          <input  type="text"
+              className="form-control"
+              value={name}
+              onChange={(e) => onChangeName(e)}
+              />
+        </div>
+        <div className="form-group"> 
+          <label>Description: </label>
+          <input  type="text"
+              className="form-control"
+              value={description}
+              onChange={(e) => onChangeDescription(e)}
+              />
+        </div>
+        <div className="form-group"> 
+          <label>Reference (Image Upload): </label>
+          <input  type="file"
+              className="form-control"
+              onChange={(e) => onChangeReferenceImage(e.target.files[0])}
+              />
+        </div>
+        {!isFile &&
+        <div className="form-group"> 
+          <label>Reference (Image Link): </label>
+          <input  type="url"
+            value={reference}
+              className="form-control"
+              onChange={(e) => onChangeReferenceLink(e)}
+              />
+        </div>
+          }
+          {isFile &&
+        <div className="form-group"> 
+          <label>Reference (Image Link): </label>
+          <input  type="url"
+              className="form-control"
+              onChange={(e) => onChangeReferenceLink(e)}
+              />
+        </div>
+          }
+        <div className="form-group">
+          <input type="submit" value="Edit Exercise" className="btn btn-primary" />
+        </div>
+      </form>
+    </div>
+    )
+  }
+
+  export default EditExercise;

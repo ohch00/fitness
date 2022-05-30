@@ -1,5 +1,4 @@
 const router = require('express').Router();
-const { async } = require('@firebase/util');
 let Workout = require('../models/workout.model');
 
 async function deleteAll(){
@@ -7,8 +6,8 @@ async function deleteAll(){
 }
 
 
-router.route('/').get((req, res) => {
-  Workout.find()
+router.route('/:id').get((req, res) => {
+  Workout.find({user: req.params.id})
     .then(workout => res.json(workout))
     .catch(err => res.status(400).json('Error: ' + err));
 });

@@ -135,7 +135,6 @@ export default class ExercisesList extends Component{
         this.deleteExercise = this.deleteExercise.bind(this);
         this.getFileFromURL = this.getFileFromURL.bind(this);
         this.deleteImage = this.deleteImage.bind(this);
-
         this.state = {exercises: []};
     }
     
