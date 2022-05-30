@@ -1,5 +1,11 @@
 const router = require('express').Router();
-let Workout = require('../models/dailyWorkout.model');
+const { async } = require('@firebase/util');
+let Workout = require('../models/workout.model');
+
+async function deleteAll(){
+  await Workout.deleteMany({});
+}
+
 
 router.route('/').get((req, res) => {
   Workout.find()
@@ -8,6 +14,7 @@ router.route('/').get((req, res) => {
 });
 
 router.route('/add').post((req, res) => {
+  const user = req.body.user;
   const exercise = req.body.exercise;
   const reps = Number(req.body.reps);
   const sets = Number(req.body.sets);
@@ -15,20 +22,28 @@ router.route('/add').post((req, res) => {
   const date = Date.parse(req.body.date);
   const finished = req.body.finished;
 
-  const newWorkout = new Workout({
-    exercise,
-    reps,
-    sets,
-    duration,
-    date,
-    finished
-    
-  });
+  //deleteAll();
 
-  newWorkout.save()
-  .then(() => res.json('Workout added!'))
-  .catch(err => res.status(400).json('Error: ' + err));
-});
+  const newWorkout = new Workout({
+      user,
+      exercise,
+      reps,
+      sets,
+      duration,
+      date,
+      finished
+      
+    });
+
+    newWorkout.save(function (err, result) {
+      res.json(result._id);
+
+      if (err) {
+        res.status(400).json('Error: ' + err);
+      }
+    })
+  })
+
 
 router.route('/:id').get((req, res) => {
   Workout.findById(req.params.id)
@@ -54,7 +69,7 @@ router.route('/update/:id').post((req, res) => {
 
 
       workout.save()
-        .then(() => res.json('Workout updated!'))
+        .then(() => res.json('User updated!'))
         .catch(err => res.status(400).json('Error: ' + err));
     })
     .catch(err => res.status(400).json('Error: ' + err));

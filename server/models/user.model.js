@@ -11,7 +11,7 @@ const userSchema = new Schema({
         minlength: 3
     },
 
-    plannedWorkouts: { type: Array, required: false }
+    plannedWorkouts: [{type: Schema.Types.ObjectId, ref: 'Workout'}]
 },
 {
     timestamps: true,

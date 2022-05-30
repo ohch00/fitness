@@ -11,11 +11,13 @@ router.route('/add').post((req, res) => {
   const name = req.body.name;
   const description = req.body.description;
   const reference = req.body.reference;
+  const workouts = []
 
   const newExercise = new Exercise({
     name,
     description,
-    reference
+    reference,
+    workouts
   });
 
   newExercise.save()
@@ -47,6 +49,17 @@ router.route('/update/:id').post((req, res) => {
         .catch(err => res.status(400).json('Error: ' + err));
     })
     .catch(err => res.status(400).json('Error: ' + err));
+});
+
+router.route('/update-workout/:id').post((req, res) => {
+  Exercise.findByIdAndUpdate(req.params.id, {
+    $push: {
+      workouts : req.body.id
+    }
+
+  }).then(() => res.json('Exercise - Workouts updated!'))
+  .catch(err => res.status(400).json('Error: ' + err));
+  
 });
 
 module.exports = router;

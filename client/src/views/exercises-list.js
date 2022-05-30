@@ -5,7 +5,6 @@ import { ref, deleteObject, getStorage } from "firebase/storage";
 import { auth } from "../firebaseConfig";
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
-//import "../styles/exercises-list.css"
 
 const Exercise = props => {
   const user = auth.currentUser; 
@@ -15,21 +14,48 @@ const Exercise = props => {
   const [duration, setDuration] = useState(0);
   const [date, setDate] = useState(new Date());
 
-  useEffect(() => {
-    const script = document.createElement('script');
-  
-    script.src = "https://use.typekit.net/foobar.js";
-    script.async = true;
-  
-    document.body.appendChild(script);
-  
-    return () => {
-      document.body.removeChild(script);
-    }
-  }, []);
-
-  const addToWorkout = (e) => {
+  const addToWorkout = async (e) => {
     e.preventDefault();
+
+    const workout = {
+      user: user.email,
+      exercise: {
+        _id: props.exercise._id,
+        name: props.exercise.name,
+        description: props.exercise.description,
+        reference: props.exercise.reference
+      },
+      reps: reps,
+      sets: sets,
+      duration: duration,
+      date: date
+
+  }
+
+  // Add workout
+  let workoutID = await axios.post('http://localhost:3001/workouts/add', workout)
+  .then((res) => {
+    return res.data;
+  })
+
+  const workoutSend = {
+    id: workoutID
+  }
+
+
+  // Add to Exercise in Array
+  axios.post('http://localhost:3001/exercises/update-workout/' + props.exercise._id, workoutSend)
+    .then(res => console.log(res.data)
+  ).catch((error) => console.log(error.response.data));
+
+
+  // Add to User in Array
+  axios.post('http://localhost:3001/users/update/' + user.email, workoutSend)
+    .then(res => console.log(res.data)
+  ).catch((error) => console.log(error.response.data));
+
+
+  window.location = '/exercises';
   }
 
   const onChangeReps = (e) => {
@@ -56,9 +82,10 @@ const Exercise = props => {
       <td>
         <Link to={"/edit/"+props.exercise._id}>edit</Link> | 
         <a onClick={() => { props.deleteExercise(props.exercise._id, props.exercise.reference) }}> delete</a>
-        {user && <><button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">+</button>
-        <div class="collapse" id="collapseExample">
-  <div class="card card-body">
+        <br></br>
+        {user && <><button className="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">+</button>
+        <div className="collapse" id="collapseExample">
+  <div className="card card-body">
         <form onSubmit={addToWorkout}>
       <div className="form-group"> 
           <label>Reps: </label>

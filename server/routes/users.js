@@ -17,4 +17,14 @@ router.route('/add').post((req, res) => {
     .catch(err => res.status(400).json('Error: ' + err));
 });
 
+router.route('/update/:id').post((req, res) => {
+  User.findOneAndUpdate({username: req.params.id}, {
+     $push: {
+      plannedWorkouts : req.body.id
+    }
+  })
+.then(() => res.json('User - Workouts updated!'))
+.catch(err => res.status(400).json('Error: ' + err));
+});
+
 module.exports = router;
