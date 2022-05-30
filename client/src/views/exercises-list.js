@@ -5,6 +5,7 @@ import { ref, deleteObject, getStorage } from "firebase/storage";
 import { auth } from "../firebaseConfig";
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
+import "../styles/exercises-list.css"
 
 const Exercise = props => {
   const user = auth.currentUser; 
@@ -78,7 +79,7 @@ const Exercise = props => {
     <tr>
       <td>{props.exercise.name}</td>
       <td>{props.exercise.description}</td>
-      <td><img src={props.exercise.reference} alt=''></img></td>
+      <td><img style={{height: 300, width: 300}} src={props.exercise.reference} alt=''></img></td>
       <td>
         <Link to={"/edit/"+props.exercise._id}>edit</Link> | 
         <a onClick={() => { props.deleteExercise(props.exercise._id, props.exercise.reference) }}> delete</a>
